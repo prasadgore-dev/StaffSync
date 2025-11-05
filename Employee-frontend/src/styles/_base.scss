@@ -1,0 +1,145 @@
+@import './variables';
+
+.page-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $spacing-lg;
+
+  @include mobile {
+    padding: $spacing-md;
+  }
+
+  &__header {
+    margin-bottom: $spacing-xl;
+
+    h1, h2, h3, h4, h5, h6 {
+      color: $primary-color;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-sm;
+    }
+
+    p {
+      color: $text-secondary;
+    }
+  }
+
+  &__content {
+    background-color: $background-main;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+    padding: $spacing-xl;
+
+    @include mobile {
+      padding: $spacing-lg;
+      border-radius: $border-radius-md;
+    }
+  }
+
+  &__section {
+    margin-bottom: $spacing-xl;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &-title {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-medium;
+      color: $text-primary;
+      margin-bottom: $spacing-lg;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    gap: $spacing-lg;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+    @include mobile {
+      grid-template-columns: 1fr;
+      gap: $spacing-md;
+    }
+  }
+
+  &__card {
+    background-color: $background-main;
+    border-radius: $border-radius-md;
+    box-shadow: $shadow-sm;
+    padding: $spacing-lg;
+    border: 1px solid $border-light;
+    transition: transform $transition-quick, box-shadow $transition-quick;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  &__form {
+    &-group {
+      margin-bottom: $spacing-lg;
+    }
+
+    &-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-md;
+      margin-top: $spacing-xl;
+
+      @include mobile {
+        flex-direction: column;
+        
+        .MuiButton-root {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Common form styles
+.form-field {
+  width: 100%;
+  margin-bottom: $spacing-md;
+
+  .MuiOutlinedInput-root {
+    border-radius: $border-radius-md;
+    background-color: $background-main;
+    
+    &:hover fieldset {
+      border-color: $primary-color;
+    }
+    
+    &.Mui-focused fieldset {
+      border-color: $primary-color;
+    }
+  }
+
+  .MuiInputLabel-root {
+    &.Mui-focused {
+      color: $primary-color;
+    }
+  }
+}
+
+// Common button styles
+.button {
+  &-primary {
+    @include button-primary;
+  }
+
+  &-secondary {
+    background-color: transparent;
+    color: $primary-color;
+    border: 1px solid currentColor;
+    padding: $spacing-sm $spacing-xl;
+    border-radius: $border-radius-md;
+    font-weight: $font-weight-medium;
+    text-transform: none;
+
+    &:hover {
+      background-color: rgba($primary-color, 0.08);
+    }
+  }
+}

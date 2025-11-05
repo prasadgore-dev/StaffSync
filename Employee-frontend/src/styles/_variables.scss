@@ -1,0 +1,155 @@
+// Colors
+$primary-color: #1976d2;
+$primary-light: #2196f3;
+$primary-dark: #0d47a1;
+$secondary-color: #dc004e;
+
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$error-color: #f44336;
+
+$text-primary: #333333;
+$text-secondary: #666666;
+$text-light: #757575;
+
+$background-main: #ffffff;
+$background-light: #f8f9fa;
+$background-dark: #e0e0e0;
+
+$border-color: #e0e0e0;
+$border-light: #f0f0f0;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 48px;
+
+// Border radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+// Breakpoints
+$breakpoint-sm: 600px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1280px;
+
+// Shadows
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+// Font sizes
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.25rem;
+$font-size-xl: 1.5rem;
+$font-size-xxl: 2rem;
+
+// Font weights
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 600;
+
+// Transitions
+$transition-quick: 0.2s ease;
+$transition-medium: 0.3s ease;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin card {
+  background-color: $background-main;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+  padding: $spacing-lg;
+  border: 1px solid $border-color;
+  transition: transform $transition-quick, box-shadow $transition-quick;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+@mixin responsive-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-lg;
+  width: 100%;
+}
+
+@mixin form-field {
+  .MuiTextField-root {
+    width: 100%;
+    margin-bottom: $spacing-md;
+
+    .MuiOutlinedInput-root {
+      border-radius: $border-radius-md;
+      
+      &:hover fieldset {
+        border-color: $primary-color;
+      }
+      
+      &.Mui-focused fieldset {
+        border-color: $primary-color;
+      }
+    }
+  }
+}
+
+@mixin button-primary {
+  background-color: $primary-color;
+  color: white;
+  padding: $spacing-sm $spacing-xl;
+  border-radius: $border-radius-md;
+  font-weight: $font-weight-medium;
+  text-transform: none;
+  box-shadow: $shadow-sm;
+  transition: all $transition-quick;
+
+  &:hover {
+    background-color: darken($primary-color, 5%);
+    box-shadow: $shadow-md;
+  }
+}
+
+@mixin section-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+  margin-bottom: $spacing-lg;
+}
+
+// Media query mixins
+@mixin mobile {
+  @media (max-width: #{$breakpoint-sm - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$breakpoint-md}) {
+    @content;
+  }
+}

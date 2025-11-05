@@ -1,0 +1,134 @@
+$drawer-width: 240px;
+
+.dashboard-layout {
+  display: flex;
+
+  &__app-bar {
+    width: 100%;
+    margin-left: 0;
+    /* ensure app bar sits above the permanent drawer so its content (welcome text) is visible */
+    z-index: 1300;
+
+    .MuiToolbar-root {
+      
+      .MuiTypography-root {
+        color: #fff; /* explicitly white to contrast with blue */
+      }
+    }
+
+    @media (min-width: 600px) {
+      width: calc(100% - #{$drawer-width});
+      margin-left: $drawer-width;
+    }
+  }
+
+  &__menu-button {
+    margin-right: 16px;
+    
+    @media (min-width: 600px) {
+      display: none;
+    }
+  }
+
+  &__drawer {
+    width: $drawer-width;
+    flex-shrink: 0;
+
+    &-temporary {
+      display: block;
+
+      @media (min-width: 600px) {
+        display: none;
+      }
+
+      .MuiDrawer-paper {
+        box-sizing: border-box;
+        width: $drawer-width;
+      }
+    }
+
+    &-permanent {
+      display: none;
+
+      @media (min-width: 600px) {
+        display: block;
+      }
+
+      .MuiDrawer-paper {
+        box-sizing: border-box;
+        width: $drawer-width;
+      }
+    }
+  }
+
+  &__main-content {
+    flex-grow: 1;
+    padding: 24px;
+    margin-top: 64px;
+    width: 100%;
+
+    @media (min-width: 600px) {
+      width: calc(100% - #{$drawer-width});
+    }
+  }
+
+  &__drawer-content {
+    .MuiToolbar-root {
+      .MuiTypography-root {
+        font-weight: 600;
+        color: #1976d2;
+      }
+    }
+
+    .MuiList-root {
+      padding: 16px;
+
+      .MuiListItem-root {
+        border-radius: 8px;
+        margin-bottom: 8px;
+
+        .MuiListItemButton-root {
+          border-radius: 8px;
+          padding: 8px 16px;
+
+          &:hover {
+            background-color: rgba(25, 118, 210, 0.08);
+          }
+
+          &.active {
+            background-color: rgba(25, 118, 210, 0.12);
+
+            .MuiListItemIcon-root {
+              color: #1976d2;
+            }
+
+            .MuiListItemText-root {
+              .MuiTypography-root {
+                color: #1976d2;
+                font-weight: 500;
+              }
+            }
+          }
+        }
+
+        .MuiListItemIcon-root {
+          min-width: 40px;
+          color: #666;
+        }
+
+        .MuiListItemText-root {
+          .MuiTypography-root {
+            font-weight: 400;
+            color: #333;
+          }
+        }
+      }
+    }
+  }
+
+  .MuiToolbar-root {
+    .MuiTypography-root {
+      font-weight: 500;
+    }
+  }
+}

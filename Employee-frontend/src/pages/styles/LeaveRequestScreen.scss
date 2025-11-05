@@ -1,0 +1,127 @@
+@import '../styles/variables';
+
+.leave-request {
+  @include responsive-container;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-xl;
+
+    h4 {
+      color: $primary-color;
+      font-size: $font-size-xxl;
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  &__form {
+    @include card;
+    max-width: 600px;
+    margin: 0 auto;
+
+    &-title {
+      font-size: $font-size-xl;
+      color: $text-primary;
+      margin-bottom: $spacing-xl;
+    }
+
+    &-fields {
+      @include form-field;
+      display: grid;
+      gap: $spacing-lg;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    &-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-md;
+      margin-top: $spacing-xl;
+    }
+  }
+
+  &__history {
+    margin-top: $spacing-xxl;
+
+    &-title {
+      @include section-title;
+      margin-bottom: $spacing-lg;
+    }
+
+    &-list {
+      display: grid;
+      gap: $spacing-md;
+    }
+  }
+
+  &__request-card {
+    @include card;
+    
+    &-header {
+      @include flex-between;
+      margin-bottom: $spacing-md;
+
+      h6 {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-medium;
+        color: $text-primary;
+      }
+    }
+
+    &-content {
+      display: grid;
+      gap: $spacing-md;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    &-info {
+      h6 {
+        font-size: $font-size-sm;
+        color: $text-light;
+        margin-bottom: $spacing-xs;
+      }
+
+      p {
+        font-size: $font-size-md;
+        color: $text-primary;
+      }
+    }
+
+    &-status {
+      &.pending {
+        color: $warning-color;
+      }
+      &.approved {
+        color: $success-color;
+      }
+      &.rejected {
+        color: $error-color;
+      }
+    }
+  }
+
+  &__dialog {
+    .MuiDialog-paper {
+      border-radius: $border-radius-lg;
+      padding: $spacing-lg;
+    }
+
+    &-title {
+      color: $primary-color;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-lg;
+    }
+
+    &-content {
+      @include form-field;
+    }
+
+    &-actions {
+      padding-top: $spacing-lg;
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-md;
+    }
+  }
+}

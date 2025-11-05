@@ -1,0 +1,73 @@
+@import '../styles/variables';
+
+.employee-dashboard {
+  @include responsive-container;
+
+  &__welcome {
+    margin-bottom: $spacing-xl;
+
+    h4 {
+      color: $primary-color;
+      font-size: $font-size-xxl;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-sm;
+    }
+
+    p {
+      color: $text-secondary;
+      font-size: $font-size-lg;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    gap: $spacing-lg;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    margin-bottom: $spacing-xl;
+  }
+
+  &__card {
+    @include card;
+    
+    &-header {
+      @include flex-between;
+      margin-bottom: $spacing-md;
+
+      h6 {
+        color: $text-primary;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+      }
+    }
+
+    &-content {
+      color: $text-secondary;
+    }
+  }
+
+  &__quick-actions {
+    margin-top: $spacing-xl;
+
+    h5 {
+      @include section-title;
+    }
+
+    &-grid {
+      display: grid;
+      gap: $spacing-md;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    &-button {
+      @include button-primary;
+      width: 100%;
+      justify-content: flex-start;
+      padding: $spacing-md;
+      gap: $spacing-md;
+
+      .MuiSvgIcon-root {
+        font-size: $font-size-xl;
+      }
+    }
+  }
+}

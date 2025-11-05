@@ -1,0 +1,17 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__main {
+    flex: 1;
+    padding: 1rem;
+  }
+
+  &__footer {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    text-align: center;
+    border-top: 1px solid #dee2e6;
+  }
+}

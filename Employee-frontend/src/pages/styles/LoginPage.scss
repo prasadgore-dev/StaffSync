@@ -1,0 +1,51 @@
+@import '../styles/variables';
+
+.login-page {
+  @include flex-center;
+  min-height: 100vh;
+  background-color: $background-light;
+
+  &__card {
+    width: 100%;
+    max-width: 400px;
+    padding: $spacing-xl;
+    background-color: $background-main;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+
+    @include mobile {
+      margin: $spacing-md;
+      padding: $spacing-lg;
+    }
+  }
+
+  &__title {
+    color: $primary-color;
+    font-size: $font-size-xxl;
+    font-weight: $font-weight-bold;
+    text-align: center;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__form {
+    @include form-field;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__submit {
+    @include button-primary;
+    width: 100%;
+    margin-top: $spacing-lg;
+    height: 48px;
+    font-size: $font-size-lg;
+  }
+
+  &__error {
+    color: $error-color;
+    text-align: center;
+    margin-top: $spacing-md;
+    font-size: $font-size-sm;
+  }
+}

@@ -1,0 +1,122 @@
+@import '../styles/variables';
+
+.profile-page {
+  @include responsive-container;
+
+  &__header {
+    margin-bottom: $spacing-xl;
+
+    h4 {
+      color: $primary-color;
+      font-size: $font-size-xxl;
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  &__content {
+    display: grid;
+    gap: $spacing-xl;
+    grid-template-columns: 300px 1fr;
+
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__sidebar {
+    @include card;
+    height: fit-content;
+
+    &-avatar {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto $spacing-lg;
+      border-radius: 50%;
+      background-color: $primary-color;
+      color: white;
+      @include flex-center;
+      font-size: $font-size-xxl;
+    }
+
+    &-info {
+      text-align: center;
+      margin-bottom: $spacing-lg;
+
+      h5 {
+        font-size: $font-size-xl;
+        color: $text-primary;
+        margin-bottom: $spacing-xs;
+      }
+
+      p {
+        color: $text-light;
+      }
+    }
+
+    &-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: $spacing-md;
+      text-align: center;
+      padding-top: $spacing-lg;
+      border-top: 1px solid $border-light;
+
+      &-item {
+        h6 {
+          font-size: $font-size-sm;
+          color: $text-light;
+          margin-bottom: $spacing-xs;
+        }
+
+        p {
+          font-size: $font-size-lg;
+          color: $primary-color;
+          font-weight: $font-weight-bold;
+        }
+      }
+    }
+  }
+
+  &__main {
+    display: grid;
+    gap: $spacing-lg;
+
+    &-section {
+      @include card;
+
+      &-header {
+        @include flex-between;
+        margin-bottom: $spacing-lg;
+
+        h5 {
+          font-size: $font-size-lg;
+          color: $text-primary;
+          font-weight: $font-weight-medium;
+        }
+      }
+
+      &-content {
+        display: grid;
+        gap: $spacing-lg;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+
+      &-field {
+        h6 {
+          font-size: $font-size-sm;
+          color: $text-light;
+          margin-bottom: $spacing-xs;
+        }
+
+        p {
+          font-size: $font-size-md;
+          color: $text-primary;
+        }
+      }
+    }
+  }
+
+  &__edit-button {
+    @include button-primary;
+  }
+}

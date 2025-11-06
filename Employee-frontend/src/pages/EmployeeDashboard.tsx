@@ -10,7 +10,7 @@ import {
   Snackbar,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { attendanceApi, taskApi } from '../services/api';
+import { timecardApi, taskApi } from '../services/api';
 
 interface Task {
   id: string;
@@ -36,14 +36,13 @@ export const EmployeeDashboard = () => {
         setError(null);
         const today = format(new Date(), 'yyyy-MM-dd');
         const [timecardResponse, tasksResponse] = await Promise.all([
-          attendanceApi.getTimecard(today, today),
-          taskApi.getTasks(today),
+          timecardApi.getTimecard(),
+          taskApi.getTasks()
         ]);
 
-        if (Array.isArray(timecardResponse) && timecardResponse.length > 0) {
-          const lastEntry = timecardResponse[timecardResponse.length - 1];
-          setIsClockedIn(!lastEntry.clockOut);
-          setLastClockIn(lastEntry.clockIn);
+        if (timecardResponse) {
+          setIsClockedIn(!timecardResponse.clockOut);
+          setLastClockIn(timecardResponse.clockIn);
         } else {
           setIsClockedIn(false);
           setLastClockIn(null);
@@ -70,11 +69,11 @@ export const EmployeeDashboard = () => {
       setError(null);
       setIsActionLoading(true);
       if (isClockedIn) {
-        await attendanceApi.clockOut();
+        const response = await timecardApi.clockOut();
         setIsClockedIn(false);
         setLastClockIn(null);
       } else {
-        const response = await attendanceApi.clockIn();
+        const response = await timecardApi.clockIn();
         if (response && response.clockIn) {
           setLastClockIn(response.clockIn);
           setIsClockedIn(true);
@@ -82,7 +81,7 @@ export const EmployeeDashboard = () => {
       }
     } catch (error) {
       console.error('Error with clock in/out:', error);
-      setError('Failed to update attendance. Please try again.');
+      setError('Failed to update timecard. Please try again.');
     } finally {
       setIsActionLoading(false);
     }

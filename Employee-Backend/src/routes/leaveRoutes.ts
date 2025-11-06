@@ -19,23 +19,40 @@ const validateRequest = (req: Request, res: Response, next: NextFunction) => {
 
 // Validation rules for leave request
 const leaveRequestValidation = [
-    body('startDate').isDate().withMessage('Start date is required'),
-    body('endDate').isDate().withMessage('End date is required'),
-    body('leaveType').isIn(['vacation', 'sick', 'personal', 'other']).withMessage('Invalid leave type'),
+    body('startDate').notEmpty().withMessage('Start date is required'),
+    body('endDate').notEmpty().withMessage('End date is required'),
+    body(['type', 'leaveType']).isIn(['vacation', 'sick', 'personal', 'other']).withMessage('Invalid leave type'),
     body('reason').notEmpty().withMessage('Reason is required')
 ];
 
 // Submit leave request
 router.post('/', authenticateToken, leaveRequestValidation, validateRequest, async (req: AuthRequest, res: Response) => {
     try {
-        const { startDate, endDate, leaveType, reason } = req.body;
+        const { startDate, endDate, type, leaveType, reason } = req.body;
+        const finalType = type || leaveType; // Use type if provided, otherwise use leaveType
+
+        if (!startDate || !endDate || !finalType || !reason) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Validate dates
+        const startDateObj = new Date(startDate);
+        const endDateObj = new Date(endDate);
+
+        if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
+            return res.status(400).json({ message: 'Invalid date format' });
+        }
+
+        if (endDateObj < startDateObj) {
+            return res.status(400).json({ message: 'End date cannot be before start date' });
+        }
 
         // Check for overlapping leave requests
         const overlapping = await leaveRequestRepository.findOne({
             where: {
                 employeeId: req.user!.id,
                 status: 'approved',
-                startDate: Between(new Date(startDate), new Date(endDate))
+                startDate: Between(startDateObj, endDateObj)
             }
         });
 
@@ -45,9 +62,9 @@ router.post('/', authenticateToken, leaveRequestValidation, validateRequest, asy
 
         const leaveRequest = leaveRequestRepository.create({
             employeeId: req.user!.id,
-            startDate,
-            endDate,
-            leaveType,
+            startDate: startDateObj,
+            endDate: endDateObj,
+            leaveType: finalType,
             reason,
             status: 'pending'
         });
@@ -95,6 +112,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
         res.status(500).json({ message: 'Error fetching leave requests' });
     }
 });
+
 
 // Get single leave request
 router.get('/:id', authenticateToken, requireOwnershipOrAdmin(req => req.params.id), async (req, res) => {

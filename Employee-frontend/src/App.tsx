@@ -5,15 +5,19 @@ import { store } from './features/store';
 import { Layout } from './components/Layout';
 import { DashboardLayout } from './components/DashboardLayout';
 import { EmployeeDashboard } from './pages/EmployeeDashboard';
-import { ComingSoon } from './components/ComingSoon';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
-import { Dashboard } from './pages/Dashboard';
 import { ProfilePage } from './pages/ProfilePage';
-import { TeamAttendanceScreen } from './pages/manager/TeamAttendanceScreen';
-import { LeaveApprovalScreen } from './pages/manager/LeaveApprovalScreen';
 import { LeaveRequestScreen } from "./pages/LeaveRequestScreen";
 import { TaskManagementScreen } from "./pages/TaskManagementScreen";
+import { TimecardHistory } from "./pages/TimecardHistory";
+import { ManagerDashboard } from "./pages/manager/ManagerDashboard";
+import { EmployeeStatusPage } from "./pages/manager/EmployeeStatusPage";
+import { LeaveApprovalPage } from "./pages/manager/LeaveApprovalPage";
+
+// Date picker provider
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const theme = createTheme({
   palette: {
@@ -30,8 +34,9 @@ function App() {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <Router>
-          <Routes>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Router>
+            <Routes>
             <Route path="/login" element={<Layout><LoginPage /></Layout>} />
             <Route
               path="/"
@@ -41,30 +46,35 @@ function App() {
                 </ProtectedRoute>
               }
             >
+              {/* Employee Routes */}
               <Route index element={<EmployeeDashboard />} />
               <Route path="profile" element={<ProfilePage />} />
-              <Route path="timecard" element={<ComingSoon title="Timecard" />} />
+              <Route path="timecard" element={<TimecardHistory />} />
               <Route path="leave" element={<LeaveRequestScreen />} />
               <Route path="tasks" element={<TaskManagementScreen />} />
+              
+              {/* Manager Routes */}
+              <Route path="manager" element={<ManagerDashboard />} />
               <Route
-                path="team-attendance"
+                path="manager/employee-status"
                 element={
                   <ProtectedRoute requiredRole="manager">
-                    <TeamAttendanceScreen />
+                    <EmployeeStatusPage />
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="leave-approval"
+                path="manager/leave-approval"
                 element={
                   <ProtectedRoute requiredRole="manager">
-                    <LeaveApprovalScreen />
+                    <LeaveApprovalPage />
                   </ProtectedRoute>
                 }
               />
             </Route>
           </Routes>
-        </Router>
+          </Router>
+        </LocalizationProvider>
       </ThemeProvider>
     </Provider>
   );

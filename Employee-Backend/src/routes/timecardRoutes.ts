@@ -7,6 +7,33 @@ import { Between } from 'typeorm';
 const router = Router();
 const timecardRepository = AppDataSource.getRepository(TimeCard);
 
+// Get timecard history
+router.get('/history', authenticateToken, async (req: AuthRequest, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        const start = new Date(startDate as string);
+        const end = new Date(endDate as string);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+
+        const timecards = await timecardRepository.find({
+            where: {
+                employeeId: req.user!.id,
+                date: Between(start, end)
+            },
+            order: {
+                date: 'DESC',
+                clockIn: 'DESC'
+            }
+        });
+
+        res.json(timecards);
+    } catch (error) {
+        console.error('Error fetching timecard history:', error);
+        res.status(500).json({ message: 'Error fetching timecard history' });
+    }
+});
+
 // Clock In
 router.post('/clock-in', authenticateToken, async (req: AuthRequest, res) => {
     try {

@@ -32,7 +32,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     }
 };
 
-export const requireRole = (roles: ('admin' | 'employee') | ('admin' | 'employee')[]) => {
+export const requireRole = (roles: ('admin' | 'employee' | 'manager') | ('admin' | 'employee' | 'manager')[]) => {
     return (req: AuthRequest, res: Response, next: NextFunction) => {
         if (!req.user) {
             return res.status(401).json({ message: 'Authentication required' });

@@ -25,13 +25,12 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 import { leaveApi } from '../services/api';
-import type { LeaveRequest, LeaveBalance } from '../types/index';
+import type { LeaveRequest } from '../types/index';
 
 export const LeaveRequestScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
-  const [leaveBalance, setLeaveBalance] = useState<LeaveBalance | null>(null);
   const [newRequest, setNewRequest] = useState({
     type: 'vacation',
     startDate: '',
@@ -42,12 +41,8 @@ export const LeaveRequestScreen = () => {
   const fetchLeaveData = async () => {
     try {
       setIsLoading(true);
-      const [requests, balance] = await Promise.all([
-        leaveApi.getRequests(),
-        leaveApi.getBalance(),
-      ]);
+      const requests = await leaveApi.getRequests();
       setLeaveRequests(requests);
-      setLeaveBalance(balance);
     } catch (error) {
       console.error('Error fetching leave data:', error);
     } finally {
@@ -59,10 +54,30 @@ export const LeaveRequestScreen = () => {
     fetchLeaveData();
   }, []);
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async () => {
     try {
+      setError(null);
       setIsLoading(true);
-      await leaveApi.submitRequest(newRequest);
+      
+      // Validate dates
+      if (!newRequest.startDate || !newRequest.endDate) {
+        throw new Error('Start date and end date are required');
+      }
+
+      // Ensure end date is not before start date
+      if (new Date(newRequest.endDate) < new Date(newRequest.startDate)) {
+        throw new Error('End date cannot be before start date');
+      }
+
+      await leaveApi.submitRequest({
+        leaveType: newRequest.type as 'vacation' | 'sick' | 'personal' | 'other',
+        startDate: new Date(newRequest.startDate).toISOString(),
+        endDate: new Date(newRequest.endDate).toISOString(),
+        reason: newRequest.reason,
+      });
+      
       setOpenDialog(false);
       fetchLeaveData();
       setNewRequest({
@@ -71,7 +86,9 @@ export const LeaveRequestScreen = () => {
         endDate: '',
         reason: '',
       });
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to submit leave request';
+      setError(errorMessage);
       console.error('Error submitting leave request:', error);
     } finally {
       setIsLoading(false);
@@ -96,27 +113,7 @@ export const LeaveRequestScreen = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 2fr' } }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Leave Balance
-              </Typography>
-              {leaveBalance && (
-                <Box>
-                  <Typography>
-                    Vacation Days: {leaveBalance.vacationDays}
-                  </Typography>
-                  <Typography>
-                    Sick Days: {leaveBalance.sickDays}
-                  </Typography>
-                  <Typography>
-                    Personal Days: {leaveBalance.personalDays}
-                  </Typography>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
+        <Box>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -152,6 +149,11 @@ export const LeaveRequestScreen = () => {
         <DialogTitle>New Leave Request</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {error && (
+              <Typography color="error" variant="body2" sx={{ mb: 2 }}>
+                {error}
+              </Typography>
+            )}
             <FormControl fullWidth>
               <InputLabel>Leave Type</InputLabel>
               <Select

@@ -19,12 +19,13 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 import { managerApi } from '../../services/api';
-import type { User } from '../../types';
 
 interface EmployeeAttendance {
   id: string;
-  user: User;
-  status: 'Present' | 'Absent' | 'Late' | 'On Leave';
+  firstName: string;
+  lastName: string;
+  department: string;
+  status: 'clocked_in' | 'clocked_out' | 'on_leave';
   clockIn?: string;
   clockOut?: string;
   totalHours?: number;
@@ -53,10 +54,11 @@ export const TeamAttendanceScreen = () => {
     const fetchAttendanceData = async () => {
       try {
         setIsLoading(true);
-        const data = await managerApi.getTeamAttendance(
-          selectedDate,
-          selectedDepartment !== 'all' ? selectedDepartment : undefined
-        );
+        const data = await managerApi.getTeamAttendance({
+          startDate: selectedDate,
+          endDate: selectedDate,
+          department: selectedDepartment !== 'all' ? selectedDepartment : undefined
+        });
         setAttendanceData(data);
       } catch (error) {
         console.error('Error fetching attendance data:', error);
@@ -67,15 +69,13 @@ export const TeamAttendanceScreen = () => {
     fetchAttendanceData();
   }, [selectedDate, selectedDepartment]);
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: 'clocked_in' | 'clocked_out' | 'on_leave') => {
     switch (status) {
-      case 'Present':
+      case 'clocked_in':
         return 'success';
-      case 'Absent':
+      case 'clocked_out':
         return 'error';
-      case 'Late':
-        return 'warning';
-      case 'On Leave':
+      case 'on_leave':
         return 'info';
       default:
         return 'default';
@@ -135,13 +135,13 @@ export const TeamAttendanceScreen = () => {
               {attendanceData.map((record) => (
                 <TableRow key={record.id}>
                   <TableCell>
-                    {record.user.firstName} {record.user.lastName}
+                    {record.firstName} {record.lastName}
                   </TableCell>
-                  <TableCell>{record.user.department}</TableCell>
+                  <TableCell>{record.department}</TableCell>
                   <TableCell>
                     <Chip
-                      label={record.status}
-                      color={getStatusColor(record.status) as any}
+                      label={record.status === 'clocked_in' ? 'Working' : record.status === 'clocked_out' ? 'Out' : 'On Leave'}
+                      color={getStatusColor(record.status)}
                       size="small"
                     />
                   </TableCell>

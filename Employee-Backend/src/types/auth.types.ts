@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { Employee } from "../entities/employee.entity";
 
 export interface LoginCredentials {
@@ -22,9 +23,13 @@ export interface AuthResponse {
 export interface DecodedToken {
     id: string;
     email: string;
-    role: 'admin' | 'employee';
+    role: 'admin' | 'employee' | 'manager';
     iat: number;
     exp: number;
+}
+
+export interface AuthRequest extends Request {
+    user?: DecodedToken;
 }
 
 export interface PasswordResetRequest {

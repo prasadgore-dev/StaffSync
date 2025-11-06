@@ -20,8 +20,11 @@ export const useAuth = () => {
     async (email: string, password: string) => {
       try {
         dispatch(loginStart());
-        const { user } = await authApi.login(email, password);
-        dispatch(loginSuccess(user));
+        const response = await authApi.login(email, password);
+        if (!response.token || !response.user) {
+          throw new Error('Invalid response from server');
+        }
+        dispatch(loginSuccess({ user: response.user, token: response.token }));
       } catch (error) {
         dispatch(loginFailure(error instanceof Error ? error.message : 'Login failed'));
       }

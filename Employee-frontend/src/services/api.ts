@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -36,14 +36,9 @@ api.interceptors.response.use(
   }
 );
 
-export const authApi = {
-  login: async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
-    return response.data;
-  },
-  logout: () => {
-    localStorage.removeItem('token');
-  },
+// Manager API declarations moved to the end of file
+
+export const userApi = {
   updateProfile: async (data: {
     firstName?: string;
     lastName?: string;
@@ -53,99 +48,149 @@ export const authApi = {
     password?: string;
     currentPassword?: string;
   }) => {
-    const response = await api.put('/auth/profile', data);
+    const response = await api.put('/api/auth/profile', data);
     return response.data;
-  },
+  }
 };
 
-export const attendanceApi = {
+export const timecardApi = {
   clockIn: async () => {
-    const response = await api.post('/attendance/clock-in');
+    const response = await api.post('/api/timecards/clock-in');
     return response.data;
   },
   clockOut: async () => {
-    const response = await api.post('/attendance/clock-out');
+    const response = await api.post('/api/timecards/clock-out');
     return response.data;
   },
-  getTimecard: async (startDate: string, endDate: string) => {
-    const response = await api.get('/attendance/timecard', {
+  getTimecard: async () => {
+    const response = await api.get('/api/timecards/today');
+    return response.data;
+  },
+  getTimecardHistory: async (startDate: string, endDate: string) => {
+    const response = await api.get('/api/timecards/history', {
       params: { startDate, endDate },
     });
     return response.data;
   },
+  exportTimecardHistory: async (startDate: string, endDate: string) => {
+    const response = await api.get('/api/timecards/export', {
+      params: { startDate, endDate },
+      responseType: 'blob'
+    });
+    return response.data;
+  }
 };
 
 export const leaveApi = {
   submitRequest: async (leaveData: {
-    type: string;
+    leaveType: 'vacation' | 'sick' | 'personal' | 'other';
     startDate: string;
     endDate: string;
     reason: string;
   }) => {
-    const response = await api.post('/leave/request', leaveData);
+    const response = await api.post('/api/leave', {
+      ...leaveData,
+      type: leaveData.leaveType // Map leaveType to type for backend compatibility
+    });
     return response.data;
   },
   getRequests: async () => {
-    const response = await api.get('/leave/requests');
+    const response = await api.get('/api/leave');
     return response.data;
   },
-  getBalance: async () => {
-    const response = await api.get('/leave/balance');
+  getRequest: async (requestId: string) => {
+    const response = await api.get(`/api/leave/${requestId}`);
     return response.data;
   },
+  updateRequest: async (requestId: string, status: 'approved' | 'rejected', managerNotes?: string) => {
+    const response = await api.put(`/api/leave/${requestId}`, { status, managerNotes });
+    return response.data;
+  }
 };
 
 export const taskApi = {
   createTask: async (taskData: {
     title: string;
-    description?: string;
-    estimatedHours?: number;
+    description: string;
+    assignedToId: string;
+    dueDate: string;
+    priority: 'low' | 'medium' | 'high';
   }) => {
-    const response = await api.post('/tasks', taskData);
+    const response = await api.post('/api/tasks', taskData);
     return response.data;
   },
   updateTask: async (taskId: string, taskData: {
-    title: string;
+    title?: string;
     description?: string;
-    estimatedHours?: number;
+    assignedToId?: string;
+    dueDate?: string;
+    priority?: 'low' | 'medium' | 'high';
+    status?: 'todo' | 'in_progress' | 'completed' | 'blocked';
   }) => {
-    const response = await api.put(`/tasks/${taskId}`, taskData);
-    return response.data;
-  },
-  updateTaskStatus: async (taskId: string, status: 'ongoing' | 'completed') => {
-    const response = await api.patch(`/tasks/${taskId}/status`, { status });
+    const response = await api.put(`/api/tasks/${taskId}`, taskData);
     return response.data;
   },
   deleteTask: async (taskId: string) => {
-    const response = await api.delete(`/tasks/${taskId}`);
+    const response = await api.delete(`/api/tasks/${taskId}`);
     return response.data;
   },
-  getTasks: async (date: string) => {
-    const response = await api.get('/tasks', { params: { date } });
+  getTasks: async (filters?: {
+    status?: string;
+    assignedToId?: string;
+    startDate?: string;
+    endDate?: string;
+  }) => {
+    const response = await api.get('/api/tasks', { params: filters });
     return response.data;
-  },
+  }
 };
 
 export const managerApi = {
-  getTeamAttendance: async (date: string, department?: string) => {
-    const response = await api.get('/manager/attendance', {
-      params: { date, department },
+  getTeamAttendance: async (filters: {
+    startDate?: string;
+    endDate?: string;
+    department?: string;
+  }) => {
+    const response = await api.get('/api/manager/attendance', {
+      params: filters,
     });
     return response.data;
   },
   getDepartments: async () => {
-    const response = await api.get('/departments');
+    const response = await api.get('/api/manager/departments');
     return response.data;
   },
   getLeaveRequests: async () => {
-    const response = await api.get('/manager/leave-requests');
+    const response = await api.get('/api/manager/leave-requests');
     return response.data;
   },
   reviewLeaveRequest: async (
     requestId: string,
     data: { status: 'approved' | 'rejected'; comments: string }
   ) => {
-    const response = await api.post(`/manager/leave-requests/${requestId}/review`, data);
+    const response = await api.post(`/api/manager/leave-requests/${requestId}/review`, data);
+    return response.data;
+  },
+  getEmployeeStatuses: async () => {
+    const response = await api.get('/api/manager/employee-statuses');
+    return response.data;
+  },
+  getDashboardStats: async () => {
+    const response = await api.get('/api/manager/dashboard-stats');
+    return response.data;
+  },
+  getEmployeeDetails: async (employeeId: string) => {
+    const response = await api.get(`/api/manager/employees/${employeeId}`);
+    return response.data;
+  },
+  getEmployeeTimecards: async (employeeId: string, startDate: string, endDate: string) => {
+    const response = await api.get(`/api/manager/employees/${employeeId}/timecards`, {
+      params: { startDate, endDate }
+    });
+    return response.data;
+  },
+  getEmployeeTasks: async (employeeId: string) => {
+    const response = await api.get(`/api/manager/employees/${employeeId}/tasks`);
     return response.data;
   },
 };

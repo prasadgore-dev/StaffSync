@@ -3,6 +3,8 @@ import { TimeCard } from "./timecard.entity";
 import { LeaveRequest } from "./leave-request.entity";
 import { Task } from "./task.entity";
 
+export type Role = "employee" | "admin" | "manager";
+
 @Entity("employees")
 export class Employee {
     @PrimaryGeneratedColumn("uuid")
@@ -22,10 +24,10 @@ export class Employee {
 
     @Column({
         type: "enum",
-        enum: ["employee", "admin"],
+        enum: ["employee", "admin", "manager"],
         default: "employee"
     })
-    role: "employee" | "admin";
+    role: "employee" | "admin" | "manager";
 
     @Column()
     department: string;

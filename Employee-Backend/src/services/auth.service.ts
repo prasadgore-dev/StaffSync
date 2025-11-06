@@ -10,17 +10,23 @@ export class AuthService {
     async login(credentials: LoginCredentials): Promise<AuthResponse> {
         const { email, password } = credentials;
         
+        console.log('Login attempt:', { email }); // Debug log
+        
         const employee = await this.employeeRepository.findOne({ 
             where: { email } 
         });
 
+        console.log('Employee found:', employee ? 'yes' : 'no'); // Debug log
+
         if (!employee) {
-            throw new Error('Invalid credentials');
+            throw new Error('Invalid credentials - user not found');
         }
 
         const isPasswordValid = await comparePasswords(password, employee.password);
+        console.log('Password valid:', isPasswordValid); // Debug log
+        
         if (!isPasswordValid) {
-            throw new Error('Invalid credentials');
+            throw new Error('Invalid credentials - invalid password');
         }
 
         const token = generateToken(employee);

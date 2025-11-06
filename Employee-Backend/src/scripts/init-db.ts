@@ -46,6 +46,109 @@ async function initializeDatabase() {
         await AppDataSource.manager.save(employee);
         console.log("Sample employee created");
 
+        // Create a manager
+        const managerPassword = await bcrypt.hash("manager123", 10);
+        const manager = new Employee();
+        manager.firstName = "Jane";
+        manager.lastName = "Smith";
+        manager.email = "jane.smith@example.com";
+        manager.password = managerPassword;
+        manager.role = "manager";
+        manager.department = "Engineering";
+        manager.position = "Engineering Manager";
+
+        await AppDataSource.manager.save(manager);
+        console.log("Manager created");
+
+        // Create multiple employees for testing
+        const departments = ["Engineering", "Marketing", "HR", "Finance"];
+        const positions = {
+            Engineering: ["Software Engineer", "QA Engineer", "DevOps Engineer"],
+            Marketing: ["Marketing Specialist", "Content Writer", "Digital Marketer"],
+            HR: ["HR Specialist", "Recruiter", "HR Coordinator"],
+            Finance: ["Accountant", "Financial Analyst", "Payroll Specialist"]
+        };
+
+        const testEmployees: Employee[] = [];
+        
+        for (let i = 1; i <= 10; i++) {
+            const dept = departments[i % departments.length];
+            const deptPositions = positions[dept as keyof typeof positions];
+            const pos = deptPositions[i % deptPositions.length];
+            
+            const testEmployee = new Employee();
+            testEmployee.firstName = `Test${i}`;
+            testEmployee.lastName = `User${i}`;
+            testEmployee.email = `test.user${i}@example.com`;
+            testEmployee.password = await bcrypt.hash("test123", 10);
+            testEmployee.role = "employee";
+            testEmployee.department = dept;
+            testEmployee.position = pos;
+            
+            const savedEmployee = await AppDataSource.manager.save(testEmployee);
+            testEmployees.push(savedEmployee);
+        }
+        console.log("Test employees created");
+
+        // Create timecards for today
+        const today = new Date();
+        today.setHours(9, 0, 0, 0); // Set to 9 AM
+        const clockOutTime = new Date(today);
+        clockOutTime.setHours(17, 0, 0, 0); // Set to 5 PM
+
+        for (let i = 0; i < testEmployees.length; i++) {
+            const timecard = new TimeCard();
+            timecard.employee = testEmployees[i];
+            timecard.date = today;
+            timecard.clockIn = today;
+            // Make some employees currently clocked in
+            if (i < 5) {
+                timecard.clockOut = null; // Still working
+            } else {
+                timecard.clockOut = clockOutTime; // Clocked out
+            }
+            await AppDataSource.manager.save(timecard);
+        }
+        console.log("Test timecards created");
+
+        // Create some leave requests
+        const leaveTypes = ["vacation", "sick", "personal"] as const;
+        const leaveStatuses = ["pending", "approved", "rejected"] as const;
+        
+        for (let i = 0; i < 5; i++) {
+            const leaveRequest = new LeaveRequest();
+            leaveRequest.employee = testEmployees[i];
+            leaveRequest.leaveType = leaveTypes[i % leaveTypes.length];
+            leaveRequest.status = leaveStatuses[i % leaveStatuses.length];
+            leaveRequest.startDate = new Date();
+            leaveRequest.endDate = new Date();
+            leaveRequest.endDate.setDate(leaveRequest.startDate.getDate() + 3);
+            leaveRequest.reason = `Test leave request ${i + 1}`;
+            if (leaveRequest.status === "approved") {
+                leaveRequest.approvedBy = manager;
+            }
+            await AppDataSource.manager.save(leaveRequest);
+        }
+        console.log("Test leave requests created");
+
+        // Create some tasks
+        const taskStatuses = ["todo", "in_progress", "completed", "blocked"] as const;
+        const priorities = ["low", "medium", "high"] as const;
+        
+        for (let i = 0; i < 8; i++) {
+            const task = new Task();
+            task.title = `Test Task ${i + 1}`;
+            task.description = `Description for test task ${i + 1}`;
+            task.assignedTo = testEmployees[i];
+            task.assignedBy = manager;
+            task.status = taskStatuses[i % taskStatuses.length];
+            task.priority = priorities[i % priorities.length];
+            task.dueDate = new Date();
+            task.dueDate.setDate(task.dueDate.getDate() + 7);
+            await AppDataSource.manager.save(task);
+        }
+        console.log("Test tasks created");
+
         console.log("Database initialization completed successfully");
         process.exit(0);
     } catch (error) {

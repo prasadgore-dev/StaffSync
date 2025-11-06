@@ -41,7 +41,7 @@ export const DashboardLayout = () => {
     navigate('/login');
   };
 
-  const baseMenuItems = [
+  const employeeMenuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/' },
     { text: 'Timecard', icon: <AccessTime />, path: '/timecard' },
     { text: 'Leave Requests', icon: <EventNote />, path: '/leave' },
@@ -50,14 +50,13 @@ export const DashboardLayout = () => {
   ];
 
   const managerMenuItems = [
-    { text: 'Team Attendance', icon: <AccessTime />, path: '/team-attendance' },
-    { text: 'Leave Approval', icon: <EventNote />, path: '/leave-approval' },
+    { text: 'Dashboard', icon: <Dashboard />, path: '/manager' },
+    { text: 'Employee Status', icon: <Person />, path: '/manager/employee-status' },
+    { text: 'Leave Approval', icon: <EventNote />, path: '/manager/leave-approval' },
+    { text: 'Profile', icon: <Person />, path: '/profile' },
   ];
 
-  const menuItems = [
-    ...baseMenuItems,
-    ...(user?.role === 'manager' ? managerMenuItems : []),
-  ];
+  const menuItems = user?.role === 'manager' ? managerMenuItems : employeeMenuItems;
 
   const drawer = (
     <Box className="dashboard-layout__drawer-content">
